@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const productoController_1 = require("../controllers/productoController");
+const router = (0, express_1.Router)();
+router.get('/', productoController_1.obtenerProductos);
+router.get('/:id', productoController_1.obtenerProductoPorId);
+router.post('/', productoController_1.crearProducto);
+router.put('/:id', productoController_1.actualizarProducto);
+router.delete('/:id', productoController_1.eliminarProducto);
+router.get('/buscar/:nombre', productoController_1.buscarProductosPorNombre);
+router.get('/marca/:marca', productoController_1.obtenerProductosPorMarca);
+router.get('/completo/skus', productoController_1.obtenerProductosConSKUs);
+router.get('/:id/categorias', productoController_1.obtenerCategoriasDeProducto);
+router.post('/:id/categorias', productoController_1.asignarCategoriaAProducto);
+router.get('/:id/resenas', productoController_1.obtenerResenasDeProducto);
+router.get('/:id/calificacion', productoController_1.obtenerPromedioCalificacion);
+router.get('/estadisticas/mas-vendidos', productoController_1.obtenerProductosMasVendidos);
+exports.default = router;
+//# sourceMappingURL=productoRoutes.js.map

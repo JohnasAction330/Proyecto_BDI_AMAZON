@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel API Proyecto BDI</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-alt: #111827;
+      --card: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --text: #e5e7eb;
+      --text-soft: #9ca3af;
+      --danger: #f97373;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1d2438 0, #020617 55%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #1f2937;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      font-size: 1.1rem;
+      margin: 0;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+    header span {
+      padding: .15rem .6rem;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      font-size: .7rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 1.5rem;
+      padding: 1.5rem 2rem 2rem;
+    }
+    @media (max-width: 900px) {
+      main { grid-template-columns: minmax(0,1fr); padding: 1rem; }
+    }
+    .panel {
+      background: radial-gradient(circle at top left, #1f2937 0, var(--card) 55%);
+      border-radius: .9rem;
+      border: 1px solid #1f2937;
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+    }
+    .panel h2 {
+      font-size: .95rem;
+      margin: 0;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel h2 span {
+      font-size: .7rem;
+      padding: .15rem .5rem;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      color: #9ca3af;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      align-items: center;
+    }
+    label {
+      font-size: .75rem;
+      color: var(--text-soft);
+    }
+    input, select {
+      background: #020617;
+      border-radius: .45rem;
+      border: 1px solid #1f2937;
+      padding: .35rem .55rem;
+      color: var(--text);
+      font-size: .8rem;
+      min-width: 0;
+    }
+    input:focus, select:focus {
+      outline: 1px solid var(--accent);
+      border-color: var(--accent);
+    }
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: .4rem .9rem;
+      font-size: .8rem;
+      cursor: pointer;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(56,189,248,.6);
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+    }
+    button:hover {
+      background: rgba(56,189,248,.2);
+    }
+    button.danger {
+      background: rgba(248,113,113,.12);
+      color: var(--danger);
+      border-color: rgba(248,113,113,.6);
+    }
+    .output {
+      margin-top: .4rem;
+      background: #020617;
+      border-radius: .6rem;
+      border: 1px solid #111827;
+      padding: .45rem .6rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: .7rem;
+      max-height: 280px;
+      overflow: auto;
+      white-space: pre-wrap;
+      color: #d1d5db;
+    }
+    .tag {
+      font-size: .7rem;
+      padding: .15rem .45rem;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      color: #9ca3af;
+    }
+    .hint {
+      font-size: .7rem;
+      color: var(--text-soft);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>API Tester · Proyecto BDI</h1>
+  <span>minimal frontend</span>
+</header>
+
+<main>
+  <!-- Productos -->
+  <section class="panel">
+    <h2>Productos <span>GET / POST / DELETE</span></h2>
+
+    <div class="row">
+      <button onclick="listarProductos()">Listar productos</button>
+      <span class="hint">GET /api/productos</span>
+    </div>
+
+    <div class="row">
+      <label>Nombre</label>
+      <input id="prod-nombre" placeholder="iPhone 15 Pro" />
+      <label>Marca</label>
+      <input id="prod-marca" placeholder="Apple" />
+      <button onclick="crearProducto()">Crear</button>
+      <span class="hint">POST /api/productos</span>
+    </div>
+
+    <div class="row">
+      <label>ID a eliminar</label>
+      <input id="prod-id-delete" type="number" min="1" style="width:80px" />
+      <button class="danger" onclick="eliminarProducto()">Eliminar</button>
+      <span class="hint">DELETE /api/productos/:id</span>
+    </div>
+
+    <div id="out-productos" class="output"></div>
+  </section>
+
+  <!-- Clientes & Carrito -->
+  <section class="panel">
+    <h2>Clientes & Carrito <span>GET / POST</span></h2>
+
+    <div class="row">
+      <button onclick="listarClientes()">Listar clientes</button>
+      <span class="hint">GET /api/clientes</span>
+    </div>
+
+    <div class="row">
+      <label>ID Cliente</label>
+      <input id="cli-id" type="number" min="1" style="width:80px" />
+      <button onclick="verCarrito()">Ver carrito</button>
+      <span class="hint">GET /api/carrito/cliente/:idCliente</span>
+    </div>
+
+    <div class="row">
+      <label>ID Cliente</label>
+      <input id="cli-id-add" type="number" min="1" style="width:80px" />
+      <label>SKU</label>
+      <input id="sku-id-add" type="number" min="1" style="width:80px" />
+      <label>Cant.</label>
+      <input id="sku-cant-add" type="number" min="1" value="1" style="width:70px" />
+      <button onclick="agregarAlCarrito()">Agregar</button>
+      <span class="hint">POST /api/carrito/cliente/:idCliente/items</span>
+    </div>
+
+    <div id="out-clientes" class="output"></div>
+  </section>
+
+  <!-- Pedidos -->
+  <section class="panel">
+    <h2>Pedidos <span>POST / GET</span></h2>
+
+    <div class="row">
+      <label>ID Cliente</label>
+      <input id="ped-cli-id" type="number" min="1" style="width:80px" />
+      <label>ID Dirección</label>
+      <input id="ped-dir-id" type="number" min="1" style="width:80px" />
+      <label>ID Vendedor</label>
+      <input id="ped-vend-id" type="number" min="1" style="width:80px" />
+      <button onclick="crearPedido()">Crear pedido</button>
+      <span class="hint">POST /api/pedidos/cliente/:idCliente</span>
+    </div>
+
+    <div class="row">
+      <label>ID Cliente</label>
+      <input id="ped-cli-list" type="number" min="1" style="width:80px" />
+      <button onclick="listarPedidosCliente()">Ver pedidos cliente</button>
+      <span class="hint">GET /api/pedidos/cliente/:idCliente</span>
+    </div>
+
+    <div class="row">
+      <label>ID Pedido</label>
+      <input id="ped-id-det" type="number" min="1" style="width:80px" />
+      <button onclick="detallePedido()">Detalle</button>
+      <span class="hint">GET /api/pedidos/:id</span>
+    </div>
+
+    <div id="out-pedidos" class="output"></div>
+  </section>
+
+  <!-- Pagos -->
+  <section class="panel">
+    <h2>Pagos <span>POST / GET</span></h2>
+
+    <div class="row">
+      <label>ID Pedido</label>
+      <input id="pay-ped-id" type="number" min="1" style="width:80px" />
+      <label>Monto</label>
+      <input id="pay-monto" type="number" step="0.01" style="width:100px" />
+      <label>Método</label>
+      <input id="pay-metodo" placeholder="Tarjeta de Crédito" style="width:140px" />
+      <label>Ref.</label>
+      <input id="pay-ref" placeholder="TXN-2025-0001" style="width:130px" />
+      <button onclick="crearPago()">Registrar pago</button>
+      <span class="hint">POST /api/pagos</span>
+    </div>
+
+    <div class="row">
+      <label>ID Pedido</label>
+      <input id="pay-ped-list" type="number" min="1" style="width:80px" />
+      <button onclick="listarPagosPedido()">Ver pagos</button>
+      <span class="hint">GET /api/pagos/pedido/:idPedido</span>
+    </div>
+
+    <div id="out-pagos" class="output"></div>
+  </section>
+</main>
+
+<script>
+  const API_BASE = 'http://localhost:3000';
+
+  async function handleRequest(url, options = {}, outId) {
+    const out = document.getElementById(outId);
+    out.textContent = 'Cargando...';
+    try {
+      const res = await fetch(url, options);
+      const text = await res.text();
+      let json;
+      try { json = JSON.parse(text); } catch { json = text; }
+      out.textContent = JSON.stringify(json, null, 2);
+    } catch (err) {
+      out.textContent = 'Error: ' + err.message;
+    }
+  }
+
+  // Productos
+  function listarProductos() {
+    handleRequest(`${API_BASE}/api/productos`, {}, 'out-productos');
+  }
+
+  function crearProducto() {
+    const nombre = (document.getElementById('prod-nombre').value || '').trim();
+    const marca = (document.getElementById('prod-marca').value || '').trim();
+    if (!nombre || !marca) {
+      alert('Nombre y marca son obligatorios');
+      return;
+    }
+    handleRequest(
+      `${API_BASE}/api/productos`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, marca })
+      },
+      'out-productos'
+    );
+  }
+
+  function eliminarProducto() {
+    const id = document.getElementById('prod-id-delete').value;
+    if (!id) { alert('Indica un ID de producto'); return; }
+    handleRequest(
+      `${API_BASE}/api/productos/${id}`,
+      { method: 'DELETE' },
+      'out-productos'
+    );
+  }
+
+  // Clientes & carrito
+  function listarClientes() {
+    handleRequest(`${API_BASE}/api/clientes`, {}, 'out-clientes');
+  }
+
+  function verCarrito() {
+    const id = document.getElementById('cli-id').value;
+    if (!id) { alert('Indica ID de cliente'); return; }
+    handleRequest(`${API_BASE}/api/carrito/cliente/${id}`, {}, 'out-clientes');
+  }
+
+  function agregarAlCarrito() {
+    const idCliente = document.getElementById('cli-id-add').value;
+    const idSku = document.getElementById('sku-id-add').value;
+    const cantidad = document.getElementById('sku-cant-add').value || 1;
+    if (!idCliente || !idSku) {
+      alert('ID cliente e ID SKU son obligatorios');
+      return;
+    }
+    handleRequest(
+      `${API_BASE}/api/carrito/cliente/${idCliente}/items`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_sku: Number(idSku), cantidad: Number(cantidad) })
+      },
+      'out-clientes'
+    );
+  }
+
+  // Pedidos
+  function crearPedido() {
+    const idCliente = document.getElementById('ped-cli-id').value;
+    const idDireccion = document.getElementById('ped-dir-id').value;
+    const idVendedor = document.getElementById('ped-vend-id').value;
+    if (!idCliente || !idDireccion || !idVendedor) {
+      alert('Cliente, dirección y vendedor son obligatorios');
+      return;
+    }
+    handleRequest(
+      `${API_BASE}/api/pedidos/cliente/${idCliente}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_direccion: Number(idDireccion),
+          id_vendedor_default: Number(idVendedor)
+        })
+      },
+      'out-pedidos'
+    );
+  }
+
+  function listarPedidosCliente() {
+    const idCliente = document.getElementById('ped-cli-list').value;
+    if (!idCliente) { alert('Indica ID de cliente'); return; }
+    handleRequest(
+      `${API_BASE}/api/pedidos/cliente/${idCliente}`,
+      {},
+      'out-pedidos'
+    );
+  }
+
+  function detallePedido() {
+    const idPedido = document.getElementById('ped-id-det').value;
+    if (!idPedido) { alert('Indica ID de pedido'); return; }
+    handleRequest(
+      `${API_BASE}/api/pedidos/${idPedido}`,
+      {},
+      'out-pedidos'
+    );
+  }
+
+  // Pagos
+  function crearPago() {
+    const idPedido = document.getElementById('pay-ped-id').value;
+    const monto = document.getElementById('pay-monto').value;
+    const metodo = (document.getElementById('pay-metodo').value || 'Tarjeta de Crédito').trim();
+    const ref = (document.getElementById('pay-ref').value || 'TXN-DEMO-0001').trim();
+    if (!idPedido || !monto) {
+      alert('Pedido y monto son obligatorios');
+      return;
+    }
+    handleRequest(
+      `${API_BASE}/api/pagos`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_pedido: Number(idPedido),
+          metodo_pago: metodo,
+          monto: Number(monto),
+          referencia_transaccion: ref
+        })
+      },
+      'out-pagos'
+    );
+  }
+
+  function listarPagosPedido() {
+    const idPedido = document.getElementById('pay-ped-list').value;
+    if (!idPedido) { alert('Indica ID de pedido'); return; }
+    handleRequest(
+      `${API_BASE}/api/pagos/pedido/${idPedido}`,
+      {},
+      'out-pagos'
+    );
+  }
+</script>
+</body>
+</html>
